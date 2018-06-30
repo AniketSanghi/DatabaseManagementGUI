@@ -90,6 +90,8 @@ public class DatabaseDriver
 		ResultSet rs = md.getTables(null, "APP", "%", null);
 		String names[] = new String[100000];
 		int j=0;
+		if(!result.next())
+			return null;
 		while (rs.next()) 
 		{
 		  names[j]=rs.getString(3);
