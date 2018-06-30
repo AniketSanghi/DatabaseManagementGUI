@@ -7,12 +7,13 @@ import DatabaseDriver.*;
 public class UniversalGUI implements ActionListener
 {
 	JFrame jframe;
-	JToolBar north,south;
-	JButton open,e1,e2,e3,create;
+	JToolBar north,south,east;
+	JButton open,e1,e2,e3,create,tablenames;
 	JLabel databasenamelabel;
 	JTextField databasename;
 	JTextArea textarea;
 	JTabbedPane jtp;
+	JComboBox jcb;
 	DatabaseDriver dd = new DatabaseDriver();
 
 	void initFrame()
@@ -28,15 +29,23 @@ public class UniversalGUI implements ActionListener
 		north.setFloatable(false);
 		south = new JToolBar("South");
 		south.setFloatable(false);
+		east = new JToolBar("East",1);
+		east.setFloatable(false);
+	}
+
+	void initJComboBox()
+	{
+		jcb = new JComboBox();
 	}
 
 	void initJButton()
 	{
 		open = new JButton("Open");
-		e1 = new JButton("Execute");
+		e1 = new JButton("Create/Insert");
 		e2 = new JButton("Execute Query");
 		e3 = new JButton("Execute Update");
 		create = new JButton("Create");
+		tablenames = new JButton("Tables");
 	}
 
 	void initJLabel()
@@ -65,6 +74,9 @@ public class UniversalGUI implements ActionListener
 		north.add(e1);
 		north.add(e2);
 		north.add(e3);
+		north.add(tablenames);
+		north.add(jcb);
+
 	}
 
 	void putComponentsOnSouthToolBar()
@@ -79,6 +91,11 @@ public class UniversalGUI implements ActionListener
 		jtp.addTab("Query",new JScrollPane(textarea));
 	}
 
+	void putComponentsOnEastToolBar()
+	{
+		
+	}
+
 	public UniversalGUI()
 	{
 		initFrame();
@@ -88,20 +105,24 @@ public class UniversalGUI implements ActionListener
 		initJTextField();
 		initJTextArea();
 		initJTabbedPane();
+		initJComboBox();
 
 		putButtonOnToolBar();
 		putComponentsOnSouthToolBar();
 		putJTextAreaOnTabbedPane();
+		putComponentsOnEastToolBar();
 
 		open.addActionListener(this);
 		e1.addActionListener(this);
 		e2.addActionListener(this);
 		e3.addActionListener(this);
 		create.addActionListener(this);
+		tablenames.addActionListener(this);
 
 		jframe.add(north,BorderLayout.NORTH);
 		jframe.add(south,BorderLayout.SOUTH);
 		jframe.add(jtp,BorderLayout.CENTER);
+		jframe.add(east,BorderLayout.EAST);
 
 		jframe.setVisible(true);
 	}
@@ -162,7 +183,7 @@ public class UniversalGUI implements ActionListener
 				}
 			}
 		}
-		else if(ae.getActionCommand().equals("Execute"))
+		else if(ae.getActionCommand().equals("Create/Insert"))
 		{
 			try
 			{
@@ -201,6 +222,13 @@ public class UniversalGUI implements ActionListener
 					JOptionPane.showMessageDialog(jframe,"Table is Empty");
 					return ;
 				}
+
+				JTable table = new JTable(data,header);
+				JScrollPane scrollPane = new JScrollPane(table);
+				table.setFillsViewportHeight(true);
+				JOptionPane.showMessageDialog(jframe,scrollPane);
+
+				/*
 				JPanel jpan = new JPanel();
 				String data1 = "<html><table border=2><tr>";
 				for(int i=0;i<header.length;++i)
@@ -216,15 +244,37 @@ public class UniversalGUI implements ActionListener
 				data1+="</table>";
 
 				jpan.add(new JLabel(data1));
-				
-				JOptionPane.showMessageDialog(jframe,jpan);
+				jpan.setBackground(Color.RED);
 
+				JOptionPane.showMessageDialog(jframe,new JScrollPane(jpan));
+				*/
 
 			}
 			catch(Exception e)
 			{
 				JOptionPane.showMessageDialog(jframe,"Error In executing Query");
 				System.out.println(e);
+			}
+		}
+		else if(ae.getActionCommand().equals("Tables"))
+		{
+			try
+			{
+				String data[] = dd.getTableNames();
+				if(data==null)
+				{
+					JOptionPane.showMessageDialog(jframe,"No Table Exist");
+					return;
+				}
+				jcb.removeAllItems();
+				for(int i=0;i<data.length;++i)
+					jcb.addItem(data[i]);
+				
+			}
+			catch(Exception e)
+			{
+				System.out.println(e);
+				JOptionPane.showMessageDialog(jframe,"Error in showing tables");
 			}
 		}
 

@@ -84,6 +84,23 @@ public class DatabaseDriver
 		return data1;
 	}
 
+	public String [] getTableNames() throws Exception
+	{
+		DatabaseMetaData md = database.getMetaData();
+		ResultSet rs = md.getTables(null, "APP", "%", null);
+		String names[] = new String[100000];
+		int j=0;
+		while (rs.next()) 
+		{
+		  names[j]=rs.getString(3);
+		  j++;
+		}
+		String namesFinal[] = new String[j];
+		for(int i=0;i<j;++i) namesFinal[i]=names[j];
+
+		return names;
+	}
+
 	/*public static void main(String args[]) throws Exception{
 		DatabaseDriver dd = new DatabaseDriver();
 		dd.open("db");
